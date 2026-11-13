@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { formatPhoneBR } from "@/lib/settings";
 import type { Product } from "@/lib/types";
 import { ProductMedia, mediaCount, mediaLabel } from "./ProductMedia";
+import { Footer } from "./Footer";
 import { Wordmark } from "./Wordmark";
 
 type CartItem = { key: string; id: number; size: string; qty: number };
@@ -241,7 +241,7 @@ export function Catalog({
         </div>
       </section>
 
-      <main className="mx-auto max-w-[1240px] px-4 pt-5 pb-14 sm:px-8">
+      <main id="produtos" className="mx-auto max-w-[1240px] scroll-mt-[140px] px-4 pt-5 pb-14 sm:px-8">
         <p className="mb-4 text-sm text-dim">{list.length === 1 ? "1 produto" : `${list.length} produtos`}</p>
         {list.length === 0 && (
           <div className="rounded-[14px] border border-dashed border-line-2 px-6 py-14 text-center text-muted">
@@ -366,21 +366,16 @@ export function Catalog({
         </div>
       </main>
 
-      <footer className="border-t border-[#1C201E]">
-        <div className="mx-auto flex max-w-[1240px] flex-wrap items-center gap-x-8 gap-y-3 px-4 pt-7 pb-10 text-sm text-dim sm:px-8">
-          <Wordmark size={18} />
-          <span className="font-display font-bold tracking-[3px] text-fg-2 uppercase italic">A casa do boleiro</span>
-          <span>Jacobina - BA · Loja on-line</span>
-          {instagram && (
-            <a href={`https://instagram.com/${instagram}`} target="_blank" rel="noopener noreferrer" className="text-lime">
-              @{instagram}
-            </a>
-          )}
-          <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="text-lime">
-            WhatsApp {formatPhoneBR(whatsapp)}
-          </a>
-        </div>
-      </footer>
+      <Footer
+        categories={categories}
+        whatsapp={whatsapp}
+        instagram={instagram}
+        onPickCategory={(c) => {
+          setCat(c);
+          setQ("");
+          document.getElementById("produtos")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }}
+      />
 
       {cartOpen && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/60" onClick={() => setCartOpen(false)}>
