@@ -142,7 +142,10 @@ export function Catalog({
               <Wordmark size={26} />
             </span>
           </a>
-          <span className="hidden border-l border-line-2 pl-3.5 text-[13px] text-dim md:inline">A casa do boleiro · Jacobina - BA</span>
+          <span className="hidden flex-col justify-center gap-[3px] border-l border-line-2 pl-3.5 leading-none whitespace-nowrap md:flex">
+            <span className="font-display text-[17px] font-bold tracking-[2.5px] text-fg-2 uppercase italic">A casa do boleiro</span>
+            <span className="text-xs font-medium tracking-[0.4px] text-dim">Jacobina - BA</span>
+          </span>
           <div className="grow" />
           <button
             onClick={() => setCartOpen(true)}
