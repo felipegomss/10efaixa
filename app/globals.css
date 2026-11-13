@@ -20,3 +20,8 @@ body { background: var(--color-ink); color: var(--color-fg); font-family: var(--
 :focus-visible { outline: 2px solid var(--color-lime); outline-offset: 2px; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
+
+@keyframes tf-marquee { from { transform: translateX(0); } to { transform: translateX(-25%); } }
+.tf-marquee { animation: tf-marquee 28s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .tf-marquee { animation: none; } }
+html { scroll-behavior: smooth; }
