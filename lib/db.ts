@@ -1,6 +1,7 @@
 import "server-only";
 import { neon } from "@neondatabase/serverless";
 import { SEED_CATEGORIES, SEED_PRODUCTS } from "./seed";
+import { DEFAULT_SETTINGS, type StoreSettings } from "./settings";
 import type { Art, Category, Product } from "./types";
 
 const url = process.env.DATABASE_URL ?? process.env.POSTGRES_URL;
@@ -38,6 +39,11 @@ export function ensureSchema() {
         photos text[] NOT NULL DEFAULT '{}',
         art jsonb,
         created_at timestamptz NOT NULL DEFAULT now()
+      )`;
+      await q`CREATE TABLE IF NOT EXISTS settings (
+        key text PRIMARY KEY,
+        value text NOT NULL,
+        updated_at timestamptz NOT NULL DEFAULT now()
       )`;
       const [{ n }] = (await q`SELECT count(*)::int AS n FROM categories`) as { n: number }[];
       if (n === 0) await seed();
@@ -171,6 +177,24 @@ export async function createCategory(name: string): Promise<number> {
 export async function renameCategory(id: number, name: string) {
   await ensureSchema();
   await db()`UPDATE categories SET name = ${name} WHERE id = ${id}`;
+}
+
+export async function getSettings(): Promise<StoreSettings> {
+  const base = { ...DEFAULT_SETTINGS };
+  if (!hasDb) return base;
+  await ensureSchema();
+  const rows = (await db()`SELECT key, value FROM settings`) as { key: string; value: string }[];
+  for (const r of rows) if (r.key in base) base[r.key as keyof StoreSettings] = r.value;
+  return base;
+}
+
+export async function saveSettings(values: StoreSettings) {
+  await ensureSchema();
+  const q = db();
+  for (const [key, value] of Object.entries(values)) {
+    await q`INSERT INTO settings (key, value) VALUES (${key}, ${value})
+      ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()`;
+  }
 }
 
 /** Só apaga categoria vazia. Retorna false se ainda houver produtos nela. */

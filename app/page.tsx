@@ -1,15 +1,16 @@
 import { Catalog } from "@/components/Catalog";
-import { getCatalog } from "@/lib/db";
+import { getCatalog, getSettings } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const { categories, products } = await getCatalog();
+  const [{ categories, products }, settings] = await Promise.all([getCatalog(), getSettings()]);
   return (
     <Catalog
       categories={categories.filter((c) => c.productCount > 0).map((c) => c.name)}
       products={products}
-      whatsapp={process.env.NEXT_PUBLIC_WHATSAPP || "557499446637"}
+      whatsapp={settings.whatsapp}
+      instagram={settings.instagram}
     />
   );
 }

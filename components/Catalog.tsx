@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { formatPhoneBR } from "@/lib/settings";
 import type { Product } from "@/lib/types";
 import { ProductMedia, mediaCount, mediaLabel } from "./ProductMedia";
 import { Wordmark } from "./Wordmark";
@@ -13,7 +14,17 @@ function sizesOf(p: Product) {
   return p.sizes.length > 0 ? p.sizes : [ONE_SIZE];
 }
 
-export function Catalog({ categories, products, whatsapp }: { categories: string[]; products: Product[]; whatsapp: string }) {
+export function Catalog({
+  categories,
+  products,
+  whatsapp,
+  instagram,
+}: {
+  categories: string[];
+  products: Product[];
+  whatsapp: string;
+  instagram: string;
+}) {
   const [cat, setCat] = useState("Todos");
   const [q, setQ] = useState("");
   const [onlyAvail, setOnlyAvail] = useState(false);
@@ -357,11 +368,13 @@ export function Catalog({ categories, products, whatsapp }: { categories: string
           <Wordmark size={18} />
           <span className="font-display font-bold tracking-[3px] text-fg-2 uppercase italic">A casa do boleiro</span>
           <span>Jacobina - BA · Loja on-line</span>
-          <a href="https://instagram.com/10efaixa_fut" className="text-lime">
-            @10efaixa_fut
-          </a>
-          <a href={`https://wa.me/${whatsapp}`} className="text-lime">
-            WhatsApp
+          {instagram && (
+            <a href={`https://instagram.com/${instagram}`} target="_blank" rel="noopener noreferrer" className="text-lime">
+              @{instagram}
+            </a>
+          )}
+          <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer" className="text-lime">
+            WhatsApp {formatPhoneBR(whatsapp)}
           </a>
         </div>
       </footer>

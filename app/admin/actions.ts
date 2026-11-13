@@ -5,12 +5,14 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { checkPassword, endSession, requireAdmin, startSession } from "@/lib/auth";
 import * as db from "@/lib/db";
+import { normalizeInstagram, normalizeWhatsapp } from "@/lib/settings";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
 function refresh() {
   revalidatePath("/");
   revalidatePath("/admin");
+  revalidatePath("/admin/configuracoes");
 }
 
 async function run(fn: () => Promise<void | string>): Promise<ActionResult> {
@@ -83,6 +85,16 @@ async function deletePhotos(urls: string[]) {
   } catch (e) {
     console.error("Falha ao apagar fotos", e);
   }
+}
+
+export async function updateSettings(input: { whatsapp: string; instagram: string }) {
+  return run(async () => {
+    const whatsapp = normalizeWhatsapp(input.whatsapp);
+    if (!whatsapp) return "WhatsApp inválido. Use DDD + número, ex.: (74) 99944-6637.";
+    const instagram = normalizeInstagram(input.instagram);
+    if (instagram === null) return "Instagram inválido. Use só o usuário, ex.: 10efaixa_fut.";
+    await db.saveSettings({ whatsapp, instagram });
+  });
 }
 
 export async function addCategory(name: string): Promise<{ ok: true; id: number } | { ok: false; error: string }> {
