@@ -58,8 +58,6 @@ export function Footer({
           <line x1="380" y1="-10" x2="380" y2="650" />
           <circle cx="380" cy="320" r="150" />
           <circle cx="380" cy="320" r="6" fill="currentColor" />
-          <rect x="680" y="160" width="120" height="320" />
-          <rect x="-40" y="160" width="120" height="320" />
         </svg>
 
         <div className="relative mx-auto grid max-w-[1240px] gap-12 px-4 sm:px-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
