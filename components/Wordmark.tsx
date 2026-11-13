@@ -1,19 +1,16 @@
-/** Assinatura "10 E FAIXA" em caixa, como aplicada no peito da camisa. */
-export function Wordmark({ size = 26, framed = true }: { size?: number; framed?: boolean }) {
+/** Assinatura "10 E FAIXA" (vetorizada do logo oficial). `size` é a altura aproximada da letra, como antes. */
+export function Wordmark({ size = 26 }: { size?: number }) {
+  // A arte tem proporção 1192 x 241; a altura da caixa é ~1,6x a altura da letra.
+  const height = Math.round(size * 1.6);
   return (
-    <span
-      className="inline-flex shrink-0 items-center whitespace-nowrap bg-ink font-display font-black italic leading-none"
-      style={{
-        fontSize: size,
-        gap: "0.28em",
-        padding: "0.2em 0.55em 0.15em",
-        transform: "skewX(-12deg)",
-        border: framed ? "2px solid var(--color-fg)" : undefined,
-        outline: framed ? "2px solid var(--color-ink)" : undefined,
-      }}
-    >
-      <span className="text-lime">10</span>
-      <span className="text-fg">E FAIXA</span>
-    </span>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/logo-10efaixa.svg"
+      alt="10 e FAIXA"
+      width={Math.round((height * 1192) / 241)}
+      height={height}
+      className="block shrink-0 select-none"
+      draggable={false}
+    />
   );
 }
