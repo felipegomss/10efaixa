@@ -244,7 +244,21 @@ export function Catalog({
 
       <main id="produtos" className="mx-auto max-w-[1240px] scroll-mt-[140px] px-4 pt-5 pb-14 sm:px-8">
         <p className="mb-4 text-sm text-dim">{list.length === 1 ? "1 produto" : `${list.length} produtos`}</p>
-        {list.length === 0 && (
+        {products.length === 0 && (
+          <div className="flex flex-col items-center gap-4 rounded-[14px] border border-dashed border-line-2 px-6 py-16 text-center">
+            <p className="font-display text-[34px] leading-none font-extrabold uppercase italic">Catálogo em atualização</p>
+            <p className="max-w-[420px] text-muted">Estamos cadastrando as novidades. Enquanto isso, chama a gente no WhatsApp e pergunta o que tem.</p>
+            <a
+              href={`https://wa.me/${whatsapp}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-12 items-center rounded-xl bg-lime px-6 font-extrabold text-ink"
+            >
+              Chamar no WhatsApp
+            </a>
+          </div>
+        )}
+        {products.length > 0 && list.length === 0 && (
           <div className="rounded-[14px] border border-dashed border-line-2 px-6 py-14 text-center text-muted">
             <p className="mb-3 text-[17px]">Nenhum produto encontrado com esses filtros.</p>
             <button

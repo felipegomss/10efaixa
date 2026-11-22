@@ -8,11 +8,18 @@ export const ART_VIEWS: { label: string; view: ArtView; bg: string }[] = [
   { label: "Detalhe", view: "detail", bg: "#C6F41F" },
 ];
 
-const FALLBACK: Art = { kind: "guard", c1: "#C6F41F", c2: "#0B0D0C" };
-
 /** Ilustração usada enquanto o produto não tem foto. */
 export function ProductArt({ art, view = "front", bg = "#ECEEE8", label }: { art: Art | null; view?: ArtView; bg?: string; label?: string }) {
-  const { kind, c1, c2, sole = "studs" } = art ?? FALLBACK;
+  if (!art) {
+    // Produto ainda sem foto: placeholder neutro com o "10" da marca.
+    return (
+      <div className="relative flex aspect-square w-full flex-col items-center justify-center gap-2 overflow-hidden bg-[#151917]" role="img" aria-label={label ?? "Foto em breve"}>
+        <span className="font-display text-[64px] leading-none font-black text-[#2C322E] italic">10</span>
+        <span className="text-xs font-semibold tracking-[1.5px] text-dim uppercase">Foto em breve</span>
+      </div>
+    );
+  }
+  const { kind, c1, c2, sole = "studs" } = art;
   let transform = "none";
   if (view === "detail") transform = kind === "boot" ? "scale(1.8) translate(-10%, -4%)" : "scale(1.75) translateY(8%)";
   else if (view === "back" && kind !== "jersey") transform = "scaleX(-1)";

@@ -1,6 +1,6 @@
 import "server-only";
 import { neon } from "@neondatabase/serverless";
-import { SEED_CATEGORIES, SEED_PRODUCTS } from "./seed";
+import { SEED_CATEGORIES } from "./seed";
 import { DEFAULT_SETTINGS, type StoreSettings } from "./settings";
 import type { Art, Category, Product } from "./types";
 
@@ -47,6 +47,7 @@ export function ensureSchema() {
       )`;
       const [{ n }] = (await q`SELECT count(*)::int AS n FROM categories`) as { n: number }[];
       if (n === 0) await seed();
+      await runMigrations();
     })().catch((err) => {
       ready = null;
       throw err;
@@ -55,18 +56,51 @@ export function ensureSchema() {
   return ready;
 }
 
+/** Banco novo: só cria as categorias iniciais (sem produtos). */
 async function seed() {
   const q = db();
-  const ids = new Map<string, number>();
   for (const [i, name] of SEED_CATEGORIES.entries()) {
-    const [row] = (await q`INSERT INTO categories (name, position) VALUES (${name}, ${i})
-      ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name RETURNING id`) as { id: number }[];
-    ids.set(name, row.id);
+    await q`INSERT INTO categories (name, position) VALUES (${name}, ${i}) ON CONFLICT (name) DO NOTHING`;
   }
-  // Insere do último para o primeiro para que a ordem "mais novos primeiro" fique igual à lista.
-  for (const p of [...SEED_PRODUCTS].reverse()) {
-    await q`INSERT INTO products (name, category_id, subtype, sizes, available, art)
-      VALUES (${p.name}, ${ids.get(p.category)!}, ${p.subtype}, ${p.sizes}, ${p.available}, ${JSON.stringify(p.art)}::jsonb)`;
+}
+
+/** Ajustes de dados que rodam uma única vez por banco (marcados na tabela settings). */
+const MIGRATIONS: { id: string; run: () => Promise<void> }[] = [
+  {
+    // Remove os produtos de exemplo do início do projeto (eram os únicos com ilustração, sem foto).
+    id: "limpar-produtos-exemplo",
+    run: async () => {
+      await db()`DELETE FROM products WHERE art IS NOT NULL AND cardinality(photos) = 0`;
+    },
+  },
+  {
+    // Primeiro produto real da loja (a foto é colocada pelo painel).
+    id: "produto-mercurial-vapor-17-society",
+    run: async () => {
+      const q = db();
+      const name = "Chuteira Nike Mercurial Vapor 17";
+      const exists = (await q`SELECT 1 FROM products WHERE lower(name) = lower(${name})`) as unknown[];
+      if (exists.length) return;
+      const [cat] = (await q`INSERT INTO categories (name, position)
+        VALUES ('Chuteiras', (SELECT coalesce(max(position), 0) + 1 FROM categories))
+        ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name RETURNING id`) as { id: number }[];
+      const sizes = ["38", "39", "40", "41", "42", "43"];
+      await q`INSERT INTO products (name, category_id, subtype, sizes, available)
+        VALUES (${name}, ${cat.id}, 'Society', ${sizes}, true)`;
+    },
+  },
+];
+
+async function runMigrations() {
+  const q = db();
+  const done = new Set(
+    ((await q`SELECT key FROM settings WHERE key LIKE 'migration:%'`) as { key: string }[]).map((r) => r.key),
+  );
+  for (const m of MIGRATIONS) {
+    const key = `migration:${m.id}`;
+    if (done.has(key)) continue;
+    await m.run();
+    await q`INSERT INTO settings (key, value) VALUES (${key}, ${new Date().toISOString()}) ON CONFLICT (key) DO NOTHING`;
   }
 }
 
@@ -97,23 +131,8 @@ function toProduct(r: ProductRow): Product {
 }
 
 function seedFallback(): { categories: Category[]; products: Product[] } {
-  const categories = SEED_CATEGORIES.map((name, i) => ({
-    id: i + 1,
-    name,
-    productCount: SEED_PRODUCTS.filter((p) => p.category === name).length,
-  }));
-  const products = SEED_PRODUCTS.map((p, i) => ({
-    id: i + 1,
-    name: p.name,
-    categoryId: SEED_CATEGORIES.indexOf(p.category) + 1,
-    category: p.category,
-    subtype: p.subtype,
-    sizes: p.sizes,
-    available: p.available,
-    photos: [],
-    art: p.art,
-  }));
-  return { categories, products };
+  const categories = SEED_CATEGORIES.map((name, i) => ({ id: i + 1, name, productCount: 0 }));
+  return { categories, products: [] };
 }
 
 export async function getCatalog(): Promise<{ categories: Category[]; products: Product[] }> {
