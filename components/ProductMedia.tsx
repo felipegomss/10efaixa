@@ -3,11 +3,13 @@ import { ART_VIEWS, ProductArt } from "./ProductArt";
 
 /** Quantas "fotos" o produto tem: as reais ou, sem foto, as 3 vistas ilustradas. */
 export function mediaCount(p: Product) {
-  return p.photos.length > 0 ? p.photos.length : ART_VIEWS.length;
+  if (p.photos.length > 0) return p.photos.length;
+  return p.art ? ART_VIEWS.length : 1;
 }
 
 export function mediaLabel(p: Product, i: number) {
   if (p.photos.length > 0) return `Foto ${i + 1}/${p.photos.length}`;
+  if (!p.art) return "Sem foto";
   return `${ART_VIEWS[i].label} ${i + 1}/${ART_VIEWS.length}`;
 }
 
