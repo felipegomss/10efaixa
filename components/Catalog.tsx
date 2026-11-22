@@ -453,7 +453,7 @@ export function Catalog({
                   {cartLines.map((c) => (
                     <div key={c.key} className="flex items-center gap-3 rounded-xl border border-line bg-panel p-2.5">
                       <div className="w-16 shrink-0 overflow-hidden rounded-lg">
-                        <ProductMedia product={c.product} index={0} />
+                        <ProductMedia product={c.product} index={0} shape="square" />
                       </div>
                       <div className="min-w-0 grow">
                         <p className="text-sm leading-snug font-semibold">{c.product.name}</p>
@@ -557,8 +557,8 @@ export function Catalog({
                 <Chevron dir="left" />
               </button>
             )}
-            <div className="w-[min(560px,70vh,100%)] overflow-hidden rounded-2xl">
-              <ProductMedia product={lbProduct} index={lb.idx} eager />
+            <div className="w-[min(480px,calc(72vh*0.75),100%)] overflow-hidden rounded-2xl">
+              <ProductMedia product={lbProduct} index={lb.idx} eager fit="contain" />
             </div>
             {mediaCount(lbProduct) > 1 && (
               <button
@@ -579,7 +579,7 @@ export function Catalog({
                   aria-label={`Ver ${mediaLabel(lbProduct, i)}`}
                   className={`w-16 cursor-pointer overflow-hidden rounded-[10px] border-2 ${i === lb.idx ? "border-lime" : "border-transparent"}`}
                 >
-                  <ProductMedia product={lbProduct} index={i} />
+                  <ProductMedia product={lbProduct} index={i} shape="square" />
                 </button>
               ))}
             </div>

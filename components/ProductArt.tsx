@@ -13,7 +13,7 @@ export function ProductArt({ art, view = "front", bg = "#ECEEE8", label }: { art
   if (!art) {
     // Produto ainda sem foto: placeholder neutro com o "10" da marca.
     return (
-      <div className="relative flex aspect-square w-full flex-col items-center justify-center gap-2 overflow-hidden bg-[#151917]" role="img" aria-label={label ?? "Foto em breve"}>
+      <div className="relative flex h-full w-full flex-col items-center justify-center gap-2 overflow-hidden bg-[#151917]" role="img" aria-label={label ?? "Foto em breve"}>
         <span className="font-display text-[64px] leading-none font-black text-[#2C322E] italic">10</span>
         <span className="text-xs font-semibold tracking-[1.5px] text-dim uppercase">Foto em breve</span>
       </div>
@@ -26,7 +26,7 @@ export function ProductArt({ art, view = "front", bg = "#ECEEE8", label }: { art
   const svgStyle = { width: "78%", height: "78%", overflow: "visible" as const, transform };
 
   return (
-    <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden" style={{ background: bg }}>
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden" style={{ background: bg }}>
       {kind === "jersey" && (
         <svg viewBox="0 0 200 200" role="img" aria-label={label ?? "Camisa"} style={svgStyle}>
           <ellipse cx="100" cy="184" rx="60" ry="6" fill="#000" opacity="0.18" />

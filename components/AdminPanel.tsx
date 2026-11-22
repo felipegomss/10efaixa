@@ -499,7 +499,7 @@ export function AdminPanel({ categories, products, hasDb, hasBlob }: { categorie
               {list.map((p) => (
                 <div key={p.id} className="flex flex-wrap items-center gap-x-4 gap-y-3 border-b border-[#1C201E] bg-panel-2 px-4 py-3 last:border-b-0">
                   <button onClick={() => startEdit(p)} className={`w-14 shrink-0 cursor-pointer overflow-hidden rounded-lg ${p.available ? "" : "opacity-45"}`} aria-label={`Editar ${p.name}`}>
-                    <ProductMedia product={p} index={0} />
+                    <ProductMedia product={p} index={0} shape="square" />
                   </button>
                   <div className="min-w-0 flex-[1_1_220px]">
                     <p className="text-[15px] leading-snug font-semibold">{p.name}</p>
