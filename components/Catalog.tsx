@@ -25,7 +25,12 @@ export function Catalog({
   whatsapp: string;
   instagram: string;
 }) {
-  const [cat, setCat] = useState("Todos");
+  const [cat, setCatState] = useState("Todos");
+  const [sub, setSub] = useState<string | null>(null);
+  const setCat = (c: string) => {
+    setCatState(c);
+    setSub(null);
+  };
   const [q, setQ] = useState("");
   const [onlyAvail, setOnlyAvail] = useState(false);
   const [picks, setPicks] = useState<Record<number, string>>({});
@@ -85,9 +90,14 @@ export function Catalog({
     };
   }, [overlayOpen, lb, byId]);
 
+  const subtypes =
+    cat === "Todos"
+      ? []
+      : [...new Set(products.filter((p) => p.category === cat && p.subtype).map((p) => p.subtype))].sort((a, b) => a.localeCompare(b, "pt-BR"));
   const query = q.trim().toLowerCase();
   const list = products.filter((p) => {
     if (cat !== "Todos" && p.category !== cat) return false;
+    if (sub && p.subtype !== sub) return false;
     if (onlyAvail && !p.available) return false;
     if (query && !`${p.name} ${p.category} ${p.subtype}`.toLowerCase().includes(query)) return false;
     return true;
@@ -239,6 +249,21 @@ export function Catalog({
             </span>
             Só disponíveis
           </button>
+          {subtypes.length > 1 && (
+            <div role="group" aria-label={`Tipos de ${cat}`} className="no-scrollbar flex w-full basis-full items-center gap-2 overflow-x-auto">
+              <span className="shrink-0 text-xs font-bold tracking-[1.5px] text-dim uppercase">Tipo</span>
+              {[null, ...subtypes].map((t) => (
+                <button
+                  key={t ?? "todos"}
+                  onClick={() => setSub(t)}
+                  aria-pressed={sub === t}
+                  className={`h-9 shrink-0 cursor-pointer rounded-full border px-3.5 text-[13px] font-semibold whitespace-nowrap ${pill(sub === t)}`}
+                >
+                  {t ?? "Todos"}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
