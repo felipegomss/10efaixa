@@ -220,7 +220,7 @@ export function Catalog({
               type="search"
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Buscar: Bahia, Mercurial, bola…"
+              placeholder="Busque por modelo: Mercurial, Phantom, F50…"
               className="h-10 min-w-0 grow bg-transparent text-[15px] text-fg outline-none placeholder:text-dim"
             />
           </div>
